@@ -1,0 +1,119 @@
+;;;
+;;; require DIV, DIVWORK
+;;;
+BDOS    EQU     5
+;
+NUMFLG: DS      1
+NBUF:   DS      6
+;
+;;;; put char for CP/M
+PUTC:   MOV     E,L
+PUTCC:  ;MVI    C,2
+        MVI     C,6
+        JMP     BDOS   
+;;;
+;
+PRDECR: XCHG
+        PUSH    D
+        CALL    DECFORM
+        POP     B
+        MOV     D,A
+        MOV     A,C
+        SUB     D
+        PUSH    D
+        JM      PRR1
+        PUSH    H
+        MOV     L,A
+        CALL    SPC
+        POP     H
+PRR1:   POP     PSW
+        JMP     PRD
+;
+PRDEC:  CALL    DECFORM
+        JMP     PRD
+;
+DECFORM:LXI     B,NBUF  ;return HL=strAdrs,A=NoOfChar
+        PUSH    B
+        MOV     A,H
+        ORA     A
+        JP      DF1
+        MVI     A,'-'
+        STAX    B
+        INX     B
+        CALL    NEGAT
+DF1:    XRA     A
+        STA     NUMFLG
+        LXI     D,-10000
+        CALL    DFSUB
+        LXI     D,-1000
+        CALL    DFSUB
+        LXI     D,-100
+        CALL    DFSUB
+        LXI     D,-10
+        CALL    DFSUB
+        MOV     A,L
+        ADI     '0'
+        STAX    B
+        INX     B
+        MOV     A,C
+        POP     H
+        SUB     L
+        RET
+
+DFSUB:  XRA     A
+DFS1:   SHLD    DIVWORK
+        DAD     D
+        INR     H
+        DCR     H
+        JM      DFS2
+        INR     A
+        JMP     DFS1
+DFS2:   LHLD    DIVWORK
+        MOV     D,A
+        LDA     NUMFLG
+        ORA     D
+        RZ
+        MOV     A,D
+        ADI     '0'
+        STAX    B
+        INX     B
+        MVI     A,0FFH
+        STA     NUMFLG
+        RET
+;
+PRD:    MOV     E,M     ;PrintFormattedChar *HL; A
+        INX     H
+        PUSH    H
+        PUSH    PSW
+        CALL    PUTCC
+        POP     PSW
+        POP     H
+        DCR     A
+        JNZ     PRD
+        RET
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; print 4 Hex digit in HL
+PR4HEX: PUSH    H
+        MOV     A,H
+        CALL    PR2H
+        POP     H
+;; print 2 Hex digit in L
+PR2HEX: MOV     A,L
+PR2H:   PUSH    PSW
+        RRC
+        RRC
+        RRC
+        RRC
+        CALL    PRHEX
+        POP     PSW
+PRHEX:  ANI     0FH     ; print 1 hex digit in lower L reg
+        ADI     '0'
+        CPI     '9'+1
+        JC      PRH1
+        ADI     'A'-'0'-10
+PRH1:   MOV     E,A
+        JMP     PUTCC
+
+;
+;;; EOF
