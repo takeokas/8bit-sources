@@ -1,0 +1,59 @@
+; 8080 signed divide , DE(16bit)/HL(16bit) -> HL(16bit) , reminder -> MODUL
+;  using NEGAT
+;
+;       working area
+MODUL:  DS      2
+        ;
+DIVWORK:DS      2
+DVW1:   DS      1
+        ;
+DIV:    MOV     A,H     ;HL=DE/HL(signed)
+        XRA     D
+        PUSH    PSW
+        MOV     A,H
+        ORA     A
+        JM      DV1
+        CALL    NEGAT
+DV1:    MOV     B,H
+        MOV     C,L
+        XCHG
+        CALL    ABS
+        CALL    PDIV
+        XCHG
+        SHLD    MODUL
+        XCHG
+        POP     PSW
+        RP
+        JMP     NEGAT
+;
+;  positive divide  HL/BC->HL,  modulo->DE
+;
+PDIV:   MVI     A,16    ;HL=HL/BC , DE=MOD (unsigned),BC must be NegNumber
+        STA     DVW1
+        LXI     D,0
+PDV2:   DAD     H
+        MOV     A,E
+        RAL
+        MOV     E,A
+        MOV     A,D
+        RAL
+        MOV     D,A
+        XCHG
+        SHLD    DIVWORK
+        DAD     B
+        INR     H
+        DCR     H
+        JM      PDV1
+        INR     E
+        JMP     PDV3
+PDV1:   LHLD    DIVWORK
+PDV3:   XCHG
+        LDA     DVW1
+        DCR     A
+        STA     DVW1
+        JNZ     PDV2
+        RET
+;
+;;; EOF
+
+
