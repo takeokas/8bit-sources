@@ -1,0 +1,15 @@
+;       8080, mulitply 16bit x 16bit -> 16bit (you never mind sign for 16bit answer)
+MULT:   MVI     A,16
+        MOV     B,D
+        MOV     C,E
+        LXI     D,0
+ML2:    DAD     H
+        XCHG
+        JNC     ML1
+        DAD     B
+ML1:    DCR     A
+        RZ
+        DAD     H
+        XCHG
+        JMP     ML2
+;; EOF
