@@ -1,0 +1,48 @@
+;;;
+;;; Signed Compair DE-HL
+;;; LEQ(less or equal), LES(less than)
+;;; GEQ(greater or equal), GRE(greater than)
+;;;
+;
+WCMP:   MOV     A,D     ;DE-HL flg=Z,C
+        XRA     H
+        JP      WCMP1   ;same Sign ?
+        XCHG
+WCMP1:  MOV     A,D
+        CMP     H
+        RNZ
+        MOV     A,E
+        CMP     L
+        RET
+;
+LEQ:            ;Less EQual
+        CALL    WCMP
+        LXI     H,1
+        RZ
+        RC
+        DCR     L
+        RET
+;
+LES:            ;Less Than
+        CALL    WCMP
+        LXI     H,1
+        RC
+        DCR     L
+        RET
+;
+GEQ:            ;Greater EQual
+        CALL    WCMP
+        LXI     H,1
+        RNC
+        DCR     L
+        RET
+;
+GRE:            ;Greater Than
+        CALL    WCMP
+        LXI     H,0
+        RZ
+        RC
+        INR     L
+        RET
+;
+;;; EOF
