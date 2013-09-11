@@ -1,0 +1,25 @@
+;;; random number generator, Randum number -> HL
+;;;
+;;;  constant number 0x3D09 is defined by "GAME-III" language for MC6800
+;;;      Maximum length sequence
+;;;       http://en.wikipedia.org/wiki/Maximum_length_sequence
+;;;  reuqire MULT
+;;;    to set rand-seed , set number to RND
+;
+RND:    DS      2
+      ;
+RAND:   PUSH    H
+        LXI     D,3D09H
+        LHLD    RND
+        CALL    MULT
+        INX     H
+        SHLD    RND
+        MOV     L,H
+        MVI     H,0
+        POP     D
+        CALL    MULT
+        MOV     L,H
+        MVI     H,0
+        INX     H
+        RET
+;;; EOF
