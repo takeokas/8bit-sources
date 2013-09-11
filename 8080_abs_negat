@@ -1,0 +1,16 @@
+; 8080, absolute and nagate routine   HL -> HL
+;
+ABS:    MOV     A,H
+        ORA     A
+        RP      ; fall into negate if minus
+;
+; negate
+;
+NEGAT:  XRA     A
+        SUB     L
+        MOV     L,A
+        SBB     H
+        SUB     L
+        MOV     H,A
+        RET
+;;; EOF
