@@ -1,5 +1,5 @@
 ; 8080 signed divide , DE(16bit)/HL(16bit) -> HL(16bit) , reminder -> MODUL
-;  using NEGAT
+;  require NEGAT
 ;
 ;       working area
 MODUL:  DS      2
