@@ -1,0 +1,19 @@
+;;;Z80 Only, 4bit binary convert to ASCII Hex character
+
+;;; sub version
+org 100h
+aaa:
+        ani 15
+        cpi 10
+        sbi 69h
+        daa
+        ret
+
+;;; add virsion
+    and  15
+    add  a,90h
+    daa
+    adc  a,40h
+    daa
+    ret
+    
